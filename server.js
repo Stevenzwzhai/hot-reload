@@ -1,9 +1,26 @@
 const path = require("path");
 const fs = require("fs");
 const mime = require("mime");
+const chokidar = require("chokidar");
 const express = require("express");
 const app = express();
 const publicPath = path.resolve(__dirname, "./src");
+var log = console.log.bind(console);
+
+//设置监听
+const watcher = chokidar.watch(publicPath);
+
+watcher
+    .on('add', pathUrl => {
+        log(`File ${pathUrl} has been added`)  
+        log(path.resolve(__dirname, pathUrl));
+    })
+    .on('change', pathUrl => {
+        log(`File ${pathUrl} has been changed`)
+    })
+    .on('unlink', pathUrl => {
+        log(`File ${pathUrl} has been removed`)
+    });
 app.use(express.static(publicPath,{
     setHeaders:function(res,path,stat) {
         // if(res && path.indexOf("/public/lab/wwwdemo")>-1) {
