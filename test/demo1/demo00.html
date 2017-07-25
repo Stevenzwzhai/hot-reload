@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="notifyMe()">click</button>
+    <button onclick="reload("demo1.js")">reload</button>
+    <script src="./vue-iview/test.js" id="test"></script>
+    <script>
+        function reload(changedJs){
+            var oldjs = null;
+            var t = null;
+            var id='test';
+            var parentNode = null;
+            oldjs = document.getElementById(id);
+            if(oldjs) {
+                parentNode = oldjs.parentNode;
+                parentNode.removeChild(oldjs);
+            }
+            var scriptObj = document.createElement("script");
+            scriptObj.src = changedJs;
+            scriptObj.type = "text/javascript";
+            scriptObj.id   = id;
+            parentNode.appendChild(scriptObj);
+        }
+        const ws = new WebSocket('ws://localhost:9988/','echo-protocol');
+        switch (ws.readyState) {
+            case WebSocket.CONNECTING:
+                // do something
+                console.log(1);
+                break;
+            case WebSocket.OPEN:
+                // do something
+                console.log(2);
+                break;
+            case WebSocket.CLOSING:
+                // do something
+                console.log(3);
+                break;
+            case WebSocket.CLOSED:
+                // do something
+                console.log(4);
+                break;
+            default:
+                // this never happens
+                console.log(0);
+                break;
+            } 
+            
+            ws.onopen = function(evt) { 
+                console.log("Connection open ..."); 
+                // ws.send("Hello WebSockets!");
+                var data = new Uint8Array(13333);;
+                ws.send(data);
+            };
+
+            ws.onmessage = function(evt) {
+                let data = JSON.parse(evt.data)
+                console.log( "Received Message: " , data);
+                console.log(data.id)
+                if(data.id){
+                    reload(data.file);
+                }
+
+                // ws.close();
+            };
+
+            ws.onclose = function(evt) {
+                console.log("Connection closed.");
+            }; 
+            ws.onerror = function(){
+                console.log('server error')
+            }
+            function notifyMe() {
+                alert(Notification.permission);
+                if (!("Notification" in window)) {
+                    alert("This browser does not support desktop notification");
+                    console.log(0);
+                }
+
+                else if (Notification.permission === "granted") {
+                    var notification = new Notification("Hi there!");
+                    alert(1);
+                }
+
+                else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission(function (permission) {
+                        alert(permission);
+                        if (permission === "granted") {
+                            var notification = new Notification("Hi there!");
+                        }
+                        alert(2);
+                    });
+                }
+
+            }
+    </script>
+</body>
+</html>
