@@ -7,7 +7,7 @@ const babel =require('babel-core');
 const express = require("express");
 const app = express();
 const appWs = express();
-const publicPath = path.resolve(__dirname, "./src");
+const publicPath = path.resolve(__dirname, "./build");
 var log = console.log.bind(console);
 
 //设置监听
@@ -24,9 +24,12 @@ const watcher = chokidar.watch(publicPath);
 //     .on('unlink', pathUrl => {
 //         log(`File ${pathUrl} has been removed`)
 //     });
+// fs.readFile(publicPath, (err, data) => {
+
+// })
 app.use(express.static(publicPath,{
     setHeaders:function(res,path,stat) {
-        console.log(path, stat);
+        // console.log(path, stat);
         // if(res && path.indexOf("/public/lab/wwwdemo")>-1) {
             res.setHeader("Content-type","text/plain");
             
@@ -34,16 +37,8 @@ app.use(express.static(publicPath,{
     }
 }));
 app.get("/", (req, res, next) => {
-    let currPath = path.resolve(publicPath, 'index.html');
-    // fs.readFile(currPath, 'binary', (err, data) => {
-    //     if(err){
-    //         res.status(404).send("not found");
-    //     }
-    //     res.set({
-    //         "Content-Type":mime.lookup(currPath)
-    //     })
-    //     res.send(data.toString());
-    // })
+    let currPath = path.resolve(__dirname, 'index.html');
+    
     res.sendFile(currPath);
     // next();
 })
@@ -54,6 +49,16 @@ let server = app.listen(8989, function () {
 
     console.log('Example app listening at http://%s:%s', host, port);
 });
+
+function translateJs(entry, output){
+    babel.transformFile(entry, {
+        sourceMaps:true
+    }, (err, res) => {
+        
+    })
+}
+
+
 
 appWs.get('/', (req, res, next) => {
     res.status(404).send('not found');

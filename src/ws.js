@@ -1,8 +1,9 @@
 import { websocketClient } from 'websocket'
 
-        const client = new websocketClient();
-        
-        client.on("connectFailed", error => console.log(`Connect Error ${error.toString()}`))
+const client = new websocketClient();
+
+export default () => {
+    client.on("connectFailed", error => console.log(`Connect Error ${error.toString()}`))
         client.on("connect", connection => {
             console.log("connected");
             connection.on('error', function(error) {
@@ -27,3 +28,5 @@ import { websocketClient } from 'websocket'
             sendNumber();
         })
         client.connect('ws://localhost:8988', 'echo-protocol');
+}       
+        
